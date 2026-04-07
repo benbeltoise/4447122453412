@@ -16,6 +16,9 @@ export default function AddScreen() {
   const [salaryExpectation, setSalaryExpectation] = useState("");
   const [status, setStatus] = useState("applied");
   const [notes, setNotes] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    context?.categories?.length ? context.categories[0].id : null
+  );
   const [error, setError] = useState("");
 
   if (!context || !context.currentUser) {
@@ -39,14 +42,13 @@ export default function AddScreen() {
       return;
     }
 
-    if (context.categories.length === 0) {
-      setError("No category available");
+    if (!selectedCategoryId) {
+      setError("Choose a category");
       return;
     }
 
     const now = new Date().toISOString();
 
-    // insert application
     const inserted = await db
       .insert(applications)
       .values({
@@ -56,7 +58,7 @@ export default function AddScreen() {
         dateApplied: dateApplied,
         effortMinutes: Number(effortMinutes),
         salaryExpectation: Number(salaryExpectation),
-        categoryId: context.categories[0].id,
+        categoryId: selectedCategoryId,
         currentStatus: status,
         notes: notes,
         createdAt: now,
@@ -66,7 +68,6 @@ export default function AddScreen() {
 
     const newApp = inserted[0];
 
-    // insert first status log
     await db.insert(applicationStatusLogs).values({
       applicationId: newApp.id,
       status: status,
@@ -74,7 +75,6 @@ export default function AddScreen() {
     });
 
     await context.refreshUserData(context.currentUser.id);
-
     router.replace("/(tabs)" as any);
   }
 
@@ -124,9 +124,26 @@ export default function AddScreen() {
       <TextInput
         value={status}
         onChangeText={setStatus}
-        placeholder="applied"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
       />
+
+      <Text>Category</Text>
+      {context.categories.length === 0 ? (
+        <Text style={{ marginBottom: 12 }}>No categories available</Text>
+      ) : (
+        context.categories.map((item: any) => (
+          <View key={item.id} style={{ marginBottom: 8 }}>
+            <Button
+              title={
+                selectedCategoryId === item.id
+                  ? `Selected: ${item.name}`
+                  : item.name
+              }
+              onPress={() => setSelectedCategoryId(item.id)}
+            />
+          </View>
+        ))
+      )}
 
       <Text>Notes</Text>
       <TextInput

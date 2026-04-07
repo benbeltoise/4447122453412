@@ -46,39 +46,45 @@ export default function HomeScreen() {
       {context.applications.length === 0 ? (
         <Text>No applications yet</Text>
       ) : (
-        context.applications.map((item: any) => (
-          <View
-            key={item.id}
-            style={{
-              borderWidth: 1,
-              padding: 12,
-              marginBottom: 12,
-            }}
-          >
-            <Text>Company: {item.company}</Text>
-            <Text>Role: {item.role}</Text>
-            <Text>Date Applied: {item.dateApplied}</Text>
-            <Text>Status: {item.currentStatus}</Text>
-            <Text>Effort Minutes: {item.effortMinutes}</Text>
-            <Text>Salary Expectation: {item.salaryExpectation}</Text>
-            <Text>Category Id: {item.categoryId}</Text>
-            <Text>Notes: {item.notes}</Text>
+        context.applications.map((item: any) => {
+          const category = context.categories.find(
+            (cat: any) => cat.id === item.categoryId
+          );
 
-            <View style={{ height: 10 }} />
+          return (
+            <View
+              key={item.id}
+              style={{
+                borderWidth: 1,
+                padding: 12,
+                marginBottom: 12,
+              }}
+            >
+              <Text>Company: {item.company}</Text>
+              <Text>Role: {item.role}</Text>
+              <Text>Date Applied: {item.dateApplied}</Text>
+              <Text>Status: {item.currentStatus}</Text>
+              <Text>Effort Minutes: {item.effortMinutes}</Text>
+              <Text>Salary Expectation: {item.salaryExpectation}</Text>
+              <Text>Category: {category ? category.name : "Unknown"}</Text>
+              <Text>Notes: {item.notes}</Text>
 
-            <Button
-              title="View"
-              onPress={() => router.push(`/application/${item.id}` as any)}
-            />
+              <View style={{ height: 10 }} />
 
-            <View style={{ height: 10 }} />
+              <Button
+                title="View"
+                onPress={() => router.push(`/application/${item.id}` as any)}
+              />
 
-            <Button
-              title="Delete"
-              onPress={() => handleDeleteApplication(item.id)}
-            />
-          </View>
-        ))
+              <View style={{ height: 10 }} />
+
+              <Button
+                title="Delete"
+                onPress={() => handleDeleteApplication(item.id)}
+              />
+            </View>
+          );
+        })
       )}
     </ScrollView>
   );

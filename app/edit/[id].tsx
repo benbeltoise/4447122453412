@@ -44,6 +44,9 @@ export default function EditApplicationScreen() {
   );
   const [status, setStatus] = useState(application.currentStatus);
   const [notes, setNotes] = useState(application.notes || "");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    application.categoryId
+  );
   const [error, setError] = useState("");
 
   async function handleSave() {
@@ -59,6 +62,11 @@ export default function EditApplicationScreen() {
       return;
     }
 
+    if (!selectedCategoryId) {
+      setError("Choose a category");
+      return;
+    }
+
     const now = new Date().toISOString();
     const statusChanged = status !== application.currentStatus;
 
@@ -70,6 +78,7 @@ export default function EditApplicationScreen() {
         dateApplied: dateApplied,
         effortMinutes: Number(effortMinutes),
         salaryExpectation: Number(salaryExpectation),
+        categoryId: selectedCategoryId,
         currentStatus: status,
         notes: notes,
         updatedAt: now,
@@ -135,6 +144,20 @@ export default function EditApplicationScreen() {
         onChangeText={setStatus}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
       />
+
+      <Text>Category</Text>
+      {context.categories.map((item: any) => (
+        <View key={item.id} style={{ marginBottom: 8 }}>
+          <Button
+            title={
+              selectedCategoryId === item.id
+                ? `Selected: ${item.name}`
+                : item.name
+            }
+            onPress={() => setSelectedCategoryId(item.id)}
+          />
+        </View>
+      ))}
 
       <Text>Notes</Text>
       <TextInput
