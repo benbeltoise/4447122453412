@@ -90,6 +90,8 @@ export default function RootLayout() {
         <Stack.Screen name="register" />
         <Stack.Screen name="add" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="application/[id]" />
+        <Stack.Screen name="edit/[id]" />
       </Stack>
     </ApplicationContext.Provider>
   );

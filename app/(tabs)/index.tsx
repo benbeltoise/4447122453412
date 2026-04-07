@@ -36,7 +36,10 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Applications</Text>
 
-      <Button title="Add Application" onPress={() => router.push("/add" as any)} />
+      <Button
+        title="Add Application"
+        onPress={() => router.push("/add" as any)}
+      />
 
       <View style={{ height: 20 }} />
 
@@ -60,6 +63,13 @@ export default function HomeScreen() {
             <Text>Salary Expectation: {item.salaryExpectation}</Text>
             <Text>Category Id: {item.categoryId}</Text>
             <Text>Notes: {item.notes}</Text>
+
+            <View style={{ height: 10 }} />
+
+            <Button
+              title="View"
+              onPress={() => router.push(`/application/${item.id}` as any)}
+            />
 
             <View style={{ height: 10 }} />
 
