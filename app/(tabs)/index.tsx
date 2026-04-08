@@ -32,9 +32,50 @@ export default function HomeScreen() {
     await context.refreshUserData(context.currentUser.id);
   }
 
+  const applicationsTarget = context.targets.find(
+  (t: any) =>
+    t.userId === context.currentUser.id &&
+    t.periodType === "weekly" &&
+    t.metricType === "applications"
+  );
+
+  const effortTarget = context.targets.find(
+    (t: any) =>
+      t.userId === context.currentUser.id &&
+      t.periodType === "weekly" &&
+      t.metricType === "effortMinutes"
+  );
+
+  const now = new Date();
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(now.getDate() - 7);
+
+  const weeklyApplications = context.applications.filter((app: any) => {
+    const date = new Date(app.dateApplied);
+    return date >= oneWeekAgo;
+  });
+
+  const applicationsCount = weeklyApplications.length;
+
+  const effortMinutes = weeklyApplications.reduce(
+    (sum: number, app: any) => sum + app.effortMinutes,
+    0
+  );
+
+
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Applications</Text>
+
+      <Text style={{ fontSize: 18, marginBottom: 10 }}>
+        Applications this week: {applicationsCount} /{" "}
+        {applicationsTarget ? applicationsTarget.targetCount : "-"}
+      </Text>
+
+      <Text style={{ fontSize: 18, marginBottom: 20 }}>
+        Effort this week: {effortMinutes} mins /{" "}
+        {effortTarget ? effortTarget.targetCount : "-"}
+      </Text>
 
       <Button
         title="Add Application"

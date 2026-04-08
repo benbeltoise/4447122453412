@@ -4,6 +4,8 @@ import { openDatabaseSync } from "expo-sqlite";
 const sqlite = openDatabaseSync("122453412.db");
 
 sqlite.execSync(`
+
+
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -47,6 +49,7 @@ sqlite.execSync(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     period_type TEXT NOT NULL,
+    metric_type TEXT NOT NULL,
     target_count INTEGER NOT NULL,
     category_id INTEGER,
     created_at TEXT NOT NULL

@@ -43,6 +43,7 @@ export const targets = sqliteTable("targets", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").notNull(),
   periodType: text("period_type").notNull(),
+  metricType: text("metric_type").notNull(),
   targetCount: integer("target_count").notNull(),
   categoryId: integer("category_id"),
   createdAt: text("created_at").notNull(),

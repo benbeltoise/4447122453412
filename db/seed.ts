@@ -103,15 +103,17 @@ export async function seedDatabaseIfEmpty() {
     {
       userId: user.id,
       periodType: "weekly",
+      metricType: "applications",
       targetCount: 5,
       categoryId: null,
       createdAt: now,
     },
     {
       userId: user.id,
-      periodType: "monthly",
-      targetCount: 20,
-      categoryId: firstCategory.id,
+      periodType: "weekly",
+      metricType: "effortMinutes",
+      targetCount: 180,
+      categoryId: null,
       createdAt: now,
     },
   ]);
