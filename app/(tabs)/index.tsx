@@ -3,12 +3,14 @@ import { db } from "@/db/client";
 import { applications } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { useRouter } from "expo-router";
-import { useContext, useEffect } from "react";
-import { Button, ScrollView, Text, View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
   const context = useContext(ApplicationContext);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
   useEffect(() => {
     if (!context) return;
@@ -62,6 +64,20 @@ export default function HomeScreen() {
     0
   );
 
+  const statuses = ["All", "applied", "interviewing", "rejected"];
+
+  const filteredApplications = context.applications.filter((item: any) => {
+    const matchesSearch =
+      item.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.notes || "").toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      selectedStatus === "All" || item.currentStatus === selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -77,6 +93,28 @@ export default function HomeScreen() {
         {effortTarget ? effortTarget.targetCount : "-"}
       </Text>
 
+      <TextInput
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Search by company, role or notes"
+        style={{
+          borderWidth: 1,
+          padding: 10,
+          marginBottom: 10,
+        }}
+      />
+
+      <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}>
+        {statuses.map((status) => (
+          <View key={status} style={{ marginRight: 10, marginBottom: 10 }}>
+            <Button
+              title={status}
+              onPress={() => setSelectedStatus(status)}
+            />
+          </View>
+        ))}
+      </View>
+
       <Button
         title="Add Application"
         onPress={() => router.push("/add" as any)}
@@ -84,10 +122,10 @@ export default function HomeScreen() {
 
       <View style={{ height: 20 }} />
 
-      {context.applications.length === 0 ? (
-        <Text>No applications yet</Text>
+      {filteredApplications.length === 0 ? (
+        <Text>No applications match your filters</Text>
       ) : (
-        context.applications.map((item: any) => {
+        filteredApplications.map((item: any) => {
           const category = context.categories.find(
             (cat: any) => cat.id === item.categoryId
           );
