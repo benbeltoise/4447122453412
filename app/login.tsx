@@ -1,17 +1,30 @@
+// Import global application context
 import { ApplicationContext } from "@/app/_layout";
+
+// Import login function
 import { loginUser } from "@/auth/auth";
+
+// Import navigation and link component
 import { Link, useRouter } from "expo-router";
+
+// Import React hooks
 import { useContext, useState } from "react";
+
+// Import React Native UI components
 import { Button, Text, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
-  const router = useRouter();
-  const context = useContext(ApplicationContext);
+  const router = useRouter(); // navigation
+  const context = useContext(ApplicationContext); // access global app state
 
+  // Input states (pre-filled with a demo account)
   const [email, setEmail] = useState("demo@student.com");
   const [password, setPassword] = useState("demo-password");
+
+  // Error message state
   const [error, setError] = useState("");
 
+  // Show loading screen if app not ready yet
   if (!context || !context.isReady) {
     return (
       <View style={{ padding: 20 }}>
@@ -20,23 +33,32 @@ export default function LoginScreen() {
     );
   }
 
+  // Handle login button press
   async function handleLogin() {
     setError("");
 
+    // Call login function
     const result = await loginUser(email, password);
 
+    // If login returns an error
     if (result.error) {
       setError(result.error);
       return;
     }
 
+    // If no user returned 
     if (!result.user) {
       setError("Login failed");
       return;
     }
 
+    // Set current user in global context
     context.setCurrentUser(result.user);
+
+    // Load user-related data 
     await context.refreshUserData(result.user.id);
+
+    // Navigate to main tab
     router.replace("/(tabs)" as any);
   }
 

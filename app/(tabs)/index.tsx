@@ -1,26 +1,39 @@
+// import global app context
 import { ApplicationContext } from "@/app/_layout";
+// import db
 import { db } from "@/db/client";
+// import applications table from db
 import { applications } from "@/db/schema";
+// import where condition for helpwith db queries
 import { eq } from "drizzle-orm";
+// import navigation
 import { useRouter } from "expo-router";
+// import react hooks
 import { useContext, useEffect, useState } from "react";
+// react native ui components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 export default function HomeScreen() {
-  const router = useRouter();
-  const context = useContext(ApplicationContext);
+  const router = useRouter(); // navigation
+  const context = useContext(ApplicationContext); //access global app state
+
+  // search input state
   const [searchQuery, setSearchQuery] = useState("");
+  // select status filter
   const [selectedStatus, setSelectedStatus] = useState("All");
 
+  // check auth when loading
   useEffect(() => {
     if (!context) return;
     if (!context.isReady) return;
 
+    // redirect to login if no user is logged in
     if (!context.currentUser) {
       router.replace("/login" as any);
     }
   }, [context, router]);
 
+  // loading state while context is loading
   if (!context || !context.currentUser) {
     return (
       <View style={{ padding: 20 }}>
@@ -29,11 +42,13 @@ export default function HomeScreen() {
     );
   }
 
+  // delete an application from db, then refresh context data
   async function handleDeleteApplication(id: number) {
     await db.delete(applications).where(eq(applications.id, id));
     await context.refreshUserData(context.currentUser.id);
   }
 
+  // get the user's weekly targets
   const applicationsTarget = context.targets.find(
   (t: any) =>
     t.userId === context.currentUser.id &&
@@ -48,24 +63,30 @@ export default function HomeScreen() {
       t.metricType === "effortMinutes"
   );
 
+  // get today's date and the date 1 week ago
   const now = new Date();
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(now.getDate() - 7);
 
+  // keep only applications from the last 7 days
   const weeklyApplications = context.applications.filter((app: any) => {
     const date = new Date(app.dateApplied);
     return date >= oneWeekAgo;
   });
 
+  // count applications this week
   const applicationsCount = weeklyApplications.length;
 
+  // count effort minutes from this week
   const effortMinutes = weeklyApplications.reduce(
     (sum: number, app: any) => sum + app.effortMinutes,
     0
   );
 
+  // status filter options
   const statuses = ["All", "applied", "interviewing", "rejected"];
 
+  // filter applications by search words and status
   const filteredApplications = context.applications.filter((item: any) => {
     const matchesSearch =
       item.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -79,6 +100,7 @@ export default function HomeScreen() {
   });
 
 
+  // html and css to render
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Applications</Text>

@@ -1,16 +1,24 @@
+// Import global application context
 import { ApplicationContext } from "@/app/_layout";
+// Import database instance
 import { db } from "@/db/client";
+// Import tables for applications and status logs
 import { applications, applicationStatusLogs } from "@/db/schema";
+// Import where condition helper for DB queries
 import { eq } from "drizzle-orm";
+// Import navigation + route params
 import { useLocalSearchParams, useRouter } from "expo-router";
+// Import React hooks
 import { useContext, useState } from "react";
+// Import React Native UI components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 export default function EditApplicationScreen() {
-  const router = useRouter();
-  const { id } = useLocalSearchParams();
-  const context = useContext(ApplicationContext);
+  const router = useRouter(); // nav
+  const { id } = useLocalSearchParams(); // get applicatio id from URL
+  const context = useContext(ApplicationContext); // access global state
 
+  // loading state
   if (!context || !context.currentUser) {
     return (
       <View style={{ padding: 20 }}>
@@ -19,10 +27,12 @@ export default function EditApplicationScreen() {
     );
   }
 
+  // find the applicaiton to edit from the context
   const application = context.applications.find(
     (item: any) => String(item.id) === String(id)
   );
 
+  // if applic not found, show message
   if (!application) {
     return (
       <View style={{ padding: 20 }}>
@@ -33,6 +43,7 @@ export default function EditApplicationScreen() {
     );
   }
 
+  // initialise the form's state with the existing applic data
   const [company, setCompany] = useState(application.company);
   const [role, setRole] = useState(application.role);
   const [dateApplied, setDateApplied] = useState(application.dateApplied);
@@ -47,11 +58,15 @@ export default function EditApplicationScreen() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     application.categoryId
   );
+  // error message state
   const [error, setError] = useState("");
 
+
+  // save updated application
   async function handleSave() {
     setError("");
 
+    // basic validation
     if (!company || !role || !dateApplied) {
       setError("Fill in company, role and date");
       return;
@@ -68,8 +83,11 @@ export default function EditApplicationScreen() {
     }
 
     const now = new Date().toISOString();
+
+    // check if status changed
     const statusChanged = status !== application.currentStatus;
 
+    // update applic in db
     await db
       .update(applications)
       .set({
@@ -85,6 +103,7 @@ export default function EditApplicationScreen() {
       })
       .where(eq(applications.id, application.id));
 
+    // if status changed, log it in status history table
     if (statusChanged) {
       await db.insert(applicationStatusLogs).values({
         applicationId: application.id,
@@ -93,10 +112,14 @@ export default function EditApplicationScreen() {
       });
     }
 
+    // refresh context data from DB
     await context.refreshUserData(context.currentUser.id);
+
+    // navigate back to application detail screen
     router.replace(`/application/${application.id}` as any);
   }
 
+  // html and css to render
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Edit Application</Text>

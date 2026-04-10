@@ -1,26 +1,42 @@
+// import global app context
 import { ApplicationContext } from "@/app/_layout";
+// import db
 import { db } from "@/db/client";
+// import tables from db
 import { applications, applicationStatusLogs } from "@/db/schema";
+// import nav
 import { useRouter } from "expo-router";
+// immport react hooks
 import { useContext, useState } from "react";
+// import ui components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 export default function AddScreen() {
-  const router = useRouter();
-  const context = useContext(ApplicationContext);
+  const router = useRouter(); //nav
+  const context = useContext(ApplicationContext); // access global app stae
 
+  // form input states
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [dateApplied, setDateApplied] = useState("");
   const [effortMinutes, setEffortMinutes] = useState("");
   const [salaryExpectation, setSalaryExpectation] = useState("");
+
+  // default status when creating a new application
   const [status, setStatus] = useState("applied");
+
+  // notes input
   const [notes, setNotes] = useState("");
+  
+  // selected category (default to the first category if it exists)
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     context?.categories?.length ? context.categories[0].id : null
   );
+
+  // error message
   const [error, setError] = useState("");
 
+  // loading state if context is loading
   if (!context || !context.currentUser) {
     return (
       <View style={{ padding: 20 }}>
@@ -29,9 +45,11 @@ export default function AddScreen() {
     );
   }
 
+  // function to add a new application
   async function handleAddApplication() {
     setError("");
 
+    // basic form validation
     if (!company || !role || !dateApplied) {
       setError("Fill in company, role and date");
       return;
@@ -49,6 +67,7 @@ export default function AddScreen() {
 
     const now = new Date().toISOString();
 
+    // insert new application into db
     const inserted = await db
       .insert(applications)
       .values({
@@ -66,18 +85,23 @@ export default function AddScreen() {
       })
       .returning();
 
-    const newApp = inserted[0];
+    const newApp = inserted[0]; // get inserted applic
 
+    // insert first status log entry
     await db.insert(applicationStatusLogs).values({
       applicationId: newApp.id,
       status: status,
       changedAt: now,
     });
 
+    // refresh context data from the db
     await context.refreshUserData(context.currentUser.id);
+
+    // go back to main tabs screen
     router.replace("/(tabs)" as any);
   }
 
+  // html & css for render
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Add Application</Text>
