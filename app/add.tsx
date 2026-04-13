@@ -6,14 +6,14 @@ import { db } from "@/db/client";
 import { applications, applicationStatusLogs } from "@/db/schema";
 // import nav
 import { useRouter } from "expo-router";
-// immport react hooks
+// import react hooks
 import { useContext, useState } from "react";
 // import ui components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 export default function AddScreen() {
-  const router = useRouter(); //nav
-  const context = useContext(ApplicationContext); // access global app stae
+  const router = useRouter(); // nav
+  const context = useContext(ApplicationContext); // access global app state
 
   // form input states
   const [company, setCompany] = useState("");
@@ -22,12 +22,15 @@ export default function AddScreen() {
   const [effortMinutes, setEffortMinutes] = useState("");
   const [salaryExpectation, setSalaryExpectation] = useState("");
 
-  // default status when creating a new application
-  const [status, setStatus] = useState("applied");
+  // selected status option
+  const [selectedStatusOption, setSelectedStatusOption] = useState("applied");
+
+  // custom status text
+  const [customStatus, setCustomStatus] = useState("");
 
   // notes input
   const [notes, setNotes] = useState("");
-  
+
   // selected category (default to the first category if it exists)
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     context?.categories?.length ? context.categories[0].id : null
@@ -44,6 +47,10 @@ export default function AddScreen() {
       </View>
     );
   }
+
+  // final status value to save
+  const finalStatus =
+    selectedStatusOption === "custom" ? customStatus : selectedStatusOption;
 
   // function to add a new application
   async function handleAddApplication() {
@@ -65,6 +72,11 @@ export default function AddScreen() {
       return;
     }
 
+    if (!finalStatus.trim()) {
+      setError("Choose or enter a status");
+      return;
+    }
+
     const now = new Date().toISOString();
 
     // insert new application into db
@@ -78,19 +90,19 @@ export default function AddScreen() {
         effortMinutes: Number(effortMinutes),
         salaryExpectation: Number(salaryExpectation),
         categoryId: selectedCategoryId,
-        currentStatus: status,
+        currentStatus: finalStatus.trim(),
         notes: notes,
         createdAt: now,
         updatedAt: now,
       })
       .returning();
 
-    const newApp = inserted[0]; // get inserted applic
+    const newApp = inserted[0]; // get inserted application
 
     // insert first status log entry
     await db.insert(applicationStatusLogs).values({
       applicationId: newApp.id,
-      status: status,
+      status: finalStatus.trim(),
       changedAt: now,
     });
 
@@ -145,11 +157,59 @@ export default function AddScreen() {
       />
 
       <Text>Status</Text>
-      <TextInput
-        value={status}
-        onChangeText={setStatus}
-        style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-      />
+
+      <View style={{ marginBottom: 8 }}>
+        <Button
+          title={
+            selectedStatusOption === "applied"
+              ? "Selected: applied"
+              : "applied"
+          }
+          onPress={() => setSelectedStatusOption("applied")}
+        />
+      </View>
+
+      <View style={{ marginBottom: 8 }}>
+        <Button
+          title={
+            selectedStatusOption === "interviewing"
+              ? "Selected: interviewing"
+              : "interviewing"
+          }
+          onPress={() => setSelectedStatusOption("interviewing")}
+        />
+      </View>
+
+      <View style={{ marginBottom: 8 }}>
+        <Button
+          title={
+            selectedStatusOption === "rejected"
+              ? "Selected: rejected"
+              : "rejected"
+          }
+          onPress={() => setSelectedStatusOption("rejected")}
+        />
+      </View>
+
+      <View style={{ marginBottom: 8 }}>
+        <Button
+          title={
+            selectedStatusOption === "custom"
+              ? "Selected: custom"
+              : "custom"
+          }
+          onPress={() => setSelectedStatusOption("custom")}
+        />
+      </View>
+
+      {selectedStatusOption === "custom" ? (
+        <TextInput
+          value={customStatus}
+          onChangeText={setCustomStatus}
+          placeholder="Enter custom status"
+          style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        />
+      ) : null}
 
       <Text>Category</Text>
       {context.categories.length === 0 ? (
