@@ -123,6 +123,7 @@ export default function AddScreen() {
         value={company}
         onChangeText={setCompany}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        accessibilityLabel="Company"
       />
 
       <Text>Role</Text>
@@ -130,6 +131,7 @@ export default function AddScreen() {
         value={role}
         onChangeText={setRole}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        accessibilityLabel="Role"
       />
 
       <Text>Date Applied</Text>
@@ -138,6 +140,7 @@ export default function AddScreen() {
         onChangeText={setDateApplied}
         placeholder="2026-04-05"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        accessibilityLabel="Date Applied"
       />
 
       <Text>Effort Minutes</Text>
@@ -146,6 +149,7 @@ export default function AddScreen() {
         onChangeText={setEffortMinutes}
         keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        accessibilityLabel="Effort Minutes"
       />
 
       <Text>Salary Expectation</Text>
@@ -154,6 +158,7 @@ export default function AddScreen() {
         onChangeText={setSalaryExpectation}
         keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+        accessibilityLabel="Salary Expectation"
       />
 
       <Text>Status</Text>
@@ -166,6 +171,7 @@ export default function AddScreen() {
               : "applied"
           }
           onPress={() => setSelectedStatusOption("applied")}
+          accessibilityLabel="Set status to applied"
         />
       </View>
 
@@ -177,6 +183,7 @@ export default function AddScreen() {
               : "interviewing"
           }
           onPress={() => setSelectedStatusOption("interviewing")}
+          accessibilityLabel="Set status to interviewing"
         />
       </View>
 
@@ -188,6 +195,7 @@ export default function AddScreen() {
               : "rejected"
           }
           onPress={() => setSelectedStatusOption("rejected")}
+          accessibilityLabel="Set status to rejected"
         />
       </View>
 
@@ -199,6 +207,7 @@ export default function AddScreen() {
               : "custom"
           }
           onPress={() => setSelectedStatusOption("custom")}
+          accessibilityLabel="Set status to custom"
         />
       </View>
 
@@ -208,6 +217,7 @@ export default function AddScreen() {
           onChangeText={setCustomStatus}
           placeholder="Enter custom status"
           style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
+          accessibilityLabel="Custom Status"
         />
       ) : null}
 
@@ -224,6 +234,7 @@ export default function AddScreen() {
                   : item.name
               }
               onPress={() => setSelectedCategoryId(item.id)}
+              accessibilityLabel={"select Category ${item.name}"}
             />
           </View>
         ))
@@ -240,11 +251,11 @@ export default function AddScreen() {
         <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text>
       ) : null}
 
-      <Button title="Save" onPress={handleAddApplication} />
+      <Button title="Save" onPress={handleAddApplication} accessibilityLabel="Save application" />
 
       <View style={{ height: 10 }} />
 
-      <Button title="Back" onPress={() => router.back()} />
+      <Button title="Back" onPress={() => router.back()} accessibilityLabel="Go back" />
     </ScrollView>
   );
 }
