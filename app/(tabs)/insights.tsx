@@ -211,15 +211,27 @@ export default function InsightsScreen() {
       {/* Time range selector buttons */}
       <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}>
         <View style={{ marginRight: 10, marginBottom: 10 }}>
-          <Button title="Daily" onPress={() => setSelectedRange("daily")} />
+          <Button
+            accessibilityLabel="Show daily insights"
+            title="Daily"
+            onPress={() => setSelectedRange("daily")}
+          />
         </View>
 
         <View style={{ marginRight: 10, marginBottom: 10 }}>
-          <Button title="Weekly" onPress={() => setSelectedRange("weekly")} />
+          <Button
+            accessibilityLabel="Show weekly insights"
+            title="Weekly"
+            onPress={() => setSelectedRange("weekly")}
+          />
         </View>
 
         <View style={{ marginRight: 10, marginBottom: 10 }}>
-          <Button title="Monthly" onPress={() => setSelectedRange("monthly")} />
+          <Button
+            accessibilityLabel="Show monthly insights"
+            title="Monthly"
+            onPress={() => setSelectedRange("monthly")}
+          />
         </View>
       </View>
 
@@ -266,7 +278,8 @@ export default function InsightsScreen() {
       ) : null}
 
       <Text style={{ fontSize: 16, marginBottom: 6 }}>
-        Effort Target: {effortTargetValue > 0 ? `${effortTargetValue} mins` : "Not set"}
+        Effort Target:{" "}
+        {effortTargetValue > 0 ? `${effortTargetValue} mins` : "Not set"}
       </Text>
 
       <Text style={{ fontSize: 16, marginBottom: 6 }}>

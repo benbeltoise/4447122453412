@@ -50,10 +50,10 @@ export default function HomeScreen() {
 
   // get the user's weekly targets
   const applicationsTarget = context.targets.find(
-  (t: any) =>
-    t.userId === context.currentUser.id &&
-    t.periodType === "weekly" &&
-    t.metricType === "applications"
+    (t: any) =>
+      t.userId === context.currentUser.id &&
+      t.periodType === "weekly" &&
+      t.metricType === "applications"
   );
 
   const effortTarget = context.targets.find(
@@ -99,7 +99,6 @@ export default function HomeScreen() {
     return matchesSearch && matchesStatus;
   });
 
-
   // html and css to render
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -116,6 +115,7 @@ export default function HomeScreen() {
       </Text>
 
       <TextInput
+        accessibilityLabel="Search applications"
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search by company, role or notes"
@@ -130,6 +130,11 @@ export default function HomeScreen() {
         {statuses.map((status) => (
           <View key={status} style={{ marginRight: 10, marginBottom: 10 }}>
             <Button
+              accessibilityLabel={
+                status === "All"
+                  ? "Filter by all statuses"
+                  : `Filter by ${status}`
+              }
               title={status}
               onPress={() => setSelectedStatus(status)}
             />
@@ -138,6 +143,7 @@ export default function HomeScreen() {
       </View>
 
       <Button
+        accessibilityLabel="Add new application"
         title="Add Application"
         onPress={() => router.push("/add" as any)}
       />
@@ -173,6 +179,7 @@ export default function HomeScreen() {
               <View style={{ height: 10 }} />
 
               <Button
+                accessibilityLabel={`View application for ${item.company}`}
                 title="View"
                 onPress={() => router.push(`/application/${item.id}` as any)}
               />
@@ -180,6 +187,7 @@ export default function HomeScreen() {
               <View style={{ height: 10 }} />
 
               <Button
+                accessibilityLabel={`Delete application for ${item.company}`}
                 title="Delete"
                 onPress={() => handleDeleteApplication(item.id)}
               />

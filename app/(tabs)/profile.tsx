@@ -202,6 +202,7 @@ export default function ProfileScreen() {
 
       <Text>Weekly Applications Target</Text>
       <TextInput
+        accessibilityLabel="Weekly Applications Target"
         value={weeklyApplicationsTarget}
         onChangeText={setWeeklyApplicationsTarget}
         keyboardType="numeric"
@@ -218,6 +219,7 @@ export default function ProfileScreen() {
 
       <Text>Weekly Effort Target (minutes)</Text>
       <TextInput
+        accessibilityLabel="Weekly Effort Target"
         value={weeklyEffortTarget}
         onChangeText={setWeeklyEffortTarget}
         keyboardType="numeric"
@@ -236,6 +238,7 @@ export default function ProfileScreen() {
 
       <Text>Monthly Applications Target</Text>
       <TextInput
+        accessibilityLabel="Monthly Applications Target"
         value={monthlyApplicationsTarget}
         onChangeText={setMonthlyApplicationsTarget}
         keyboardType="numeric"
@@ -252,6 +255,7 @@ export default function ProfileScreen() {
 
       <Text>Monthly Effort Target (minutes)</Text>
       <TextInput
+        accessibilityLabel="Monthly Effort Target"
         value={monthlyEffortTarget}
         onChangeText={setMonthlyEffortTarget}
         keyboardType="numeric"
@@ -266,12 +270,24 @@ export default function ProfileScreen() {
           : "Not set"}
       </Text>
 
-      <Button title="Save Targets" onPress={handleSaveTargets} />
+      <Button
+        accessibilityLabel="Save targets"
+        title="Save Targets"
+        onPress={handleSaveTargets}
+      />
       <View style={{ height: 10 }} />
 
-      <Button title="Logout" onPress={handleLogout} />
+      <Button
+        accessibilityLabel="Log out"
+        title="Logout"
+        onPress={handleLogout}
+      />
       <View style={{ height: 10 }} />
-      <Button title="Delete Profile" onPress={handleDeleteProfile} />
+      <Button
+        accessibilityLabel="Delete profile"
+        title="Delete Profile"
+        onPress={handleDeleteProfile}
+      />
     </ScrollView>
   );
 }

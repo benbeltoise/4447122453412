@@ -39,7 +39,7 @@ export async function registerUser(
     .values({
       name: trimmedName,
       email: trimmedEmail,
-      passwordHash: trimmedPassword, 
+      passwordHash: trimmedPassword,
       createdAt: new Date().toISOString(),
     })
     .returning();

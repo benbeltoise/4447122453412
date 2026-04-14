@@ -120,104 +120,104 @@ export default function AddScreen() {
 
       <Text>Company</Text>
       <TextInput
+        accessibilityLabel="Company"
         value={company}
         onChangeText={setCompany}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-        accessibilityLabel="Company"
       />
 
       <Text>Role</Text>
       <TextInput
+        accessibilityLabel="Role"
         value={role}
         onChangeText={setRole}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-        accessibilityLabel="Role"
       />
 
       <Text>Date Applied</Text>
       <TextInput
+        accessibilityLabel="Date Applied"
         value={dateApplied}
         onChangeText={setDateApplied}
         placeholder="2026-04-05"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-        accessibilityLabel="Date Applied"
       />
 
       <Text>Effort Minutes</Text>
       <TextInput
+        accessibilityLabel="Effort Minutes"
         value={effortMinutes}
         onChangeText={setEffortMinutes}
         keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-        accessibilityLabel="Effort Minutes"
       />
 
       <Text>Salary Expectation</Text>
       <TextInput
+        accessibilityLabel="Salary Expectation"
         value={salaryExpectation}
         onChangeText={setSalaryExpectation}
         keyboardType="numeric"
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-        accessibilityLabel="Salary Expectation"
       />
 
       <Text>Status</Text>
 
       <View style={{ marginBottom: 8 }}>
         <Button
+          accessibilityLabel="Set status to applied"
           title={
             selectedStatusOption === "applied"
               ? "Selected: applied"
               : "applied"
           }
           onPress={() => setSelectedStatusOption("applied")}
-          accessibilityLabel="Set status to applied"
         />
       </View>
 
       <View style={{ marginBottom: 8 }}>
         <Button
+          accessibilityLabel="Set status to interviewing"
           title={
             selectedStatusOption === "interviewing"
               ? "Selected: interviewing"
               : "interviewing"
           }
           onPress={() => setSelectedStatusOption("interviewing")}
-          accessibilityLabel="Set status to interviewing"
         />
       </View>
 
       <View style={{ marginBottom: 8 }}>
         <Button
+          accessibilityLabel="Set status to rejected"
           title={
             selectedStatusOption === "rejected"
               ? "Selected: rejected"
               : "rejected"
           }
           onPress={() => setSelectedStatusOption("rejected")}
-          accessibilityLabel="Set status to rejected"
         />
       </View>
 
       <View style={{ marginBottom: 8 }}>
         <Button
+          accessibilityLabel="Set status to custom"
           title={
             selectedStatusOption === "custom"
               ? "Selected: custom"
               : "custom"
           }
           onPress={() => setSelectedStatusOption("custom")}
-          accessibilityLabel="Set status to custom"
         />
       </View>
 
       {selectedStatusOption === "custom" ? (
         <TextInput
+          accessibilityLabel="Custom Status"
           value={customStatus}
           onChangeText={setCustomStatus}
           placeholder="Enter custom status"
           style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-          accessibilityLabel="Custom Status"
         />
       ) : null}
 
@@ -228,13 +228,13 @@ export default function AddScreen() {
         context.categories.map((item: any) => (
           <View key={item.id} style={{ marginBottom: 8 }}>
             <Button
+              accessibilityLabel={`Select category ${item.name}`}
               title={
                 selectedCategoryId === item.id
                   ? `Selected: ${item.name}`
                   : item.name
               }
               onPress={() => setSelectedCategoryId(item.id)}
-              accessibilityLabel={"select Category ${item.name}"}
             />
           </View>
         ))
@@ -242,6 +242,7 @@ export default function AddScreen() {
 
       <Text>Notes</Text>
       <TextInput
+        accessibilityLabel="Notes"
         value={notes}
         onChangeText={setNotes}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -251,11 +252,19 @@ export default function AddScreen() {
         <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text>
       ) : null}
 
-      <Button title="Save" onPress={handleAddApplication} accessibilityLabel="Save application" />
+      <Button
+        accessibilityLabel="Save application"
+        title="Save"
+        onPress={handleAddApplication}
+      />
 
       <View style={{ height: 10 }} />
 
-      <Button title="Back" onPress={() => router.back()} accessibilityLabel="Go back" />
+      <Button
+        accessibilityLabel="Go back"
+        title="Back"
+        onPress={() => router.back()}
+      />
     </ScrollView>
   );
 }

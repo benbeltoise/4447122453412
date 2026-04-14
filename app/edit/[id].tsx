@@ -38,7 +38,11 @@ export default function EditApplicationScreen() {
       <View style={{ padding: 20 }}>
         <Text>Application not found</Text>
         <View style={{ height: 10 }} />
-        <Button title="Back" onPress={() => router.back()} />
+        <Button
+          accessibilityLabel="Go back"
+          title="Back"
+          onPress={() => router.back()}
+        />
       </View>
     );
   }
@@ -60,7 +64,6 @@ export default function EditApplicationScreen() {
   );
   // error message state
   const [error, setError] = useState("");
-
 
   // save updated application
   async function handleSave() {
@@ -126,6 +129,7 @@ export default function EditApplicationScreen() {
 
       <Text>Company</Text>
       <TextInput
+        accessibilityLabel="Company"
         value={company}
         onChangeText={setCompany}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -133,6 +137,7 @@ export default function EditApplicationScreen() {
 
       <Text>Role</Text>
       <TextInput
+        accessibilityLabel="Role"
         value={role}
         onChangeText={setRole}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -140,6 +145,7 @@ export default function EditApplicationScreen() {
 
       <Text>Date Applied</Text>
       <TextInput
+        accessibilityLabel="Date Applied"
         value={dateApplied}
         onChangeText={setDateApplied}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -147,6 +153,7 @@ export default function EditApplicationScreen() {
 
       <Text>Effort Minutes</Text>
       <TextInput
+        accessibilityLabel="Effort Minutes"
         value={effortMinutes}
         onChangeText={setEffortMinutes}
         keyboardType="numeric"
@@ -155,6 +162,7 @@ export default function EditApplicationScreen() {
 
       <Text>Salary Expectation</Text>
       <TextInput
+        accessibilityLabel="Salary Expectation"
         value={salaryExpectation}
         onChangeText={setSalaryExpectation}
         keyboardType="numeric"
@@ -163,6 +171,7 @@ export default function EditApplicationScreen() {
 
       <Text>Status</Text>
       <TextInput
+        accessibilityLabel="Status"
         value={status}
         onChangeText={setStatus}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -172,6 +181,7 @@ export default function EditApplicationScreen() {
       {context.categories.map((item: any) => (
         <View key={item.id} style={{ marginBottom: 8 }}>
           <Button
+            accessibilityLabel={`Select category ${item.name}`}
             title={
               selectedCategoryId === item.id
                 ? `Selected: ${item.name}`
@@ -184,6 +194,7 @@ export default function EditApplicationScreen() {
 
       <Text>Notes</Text>
       <TextInput
+        accessibilityLabel="Notes"
         value={notes}
         onChangeText={setNotes}
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
@@ -193,11 +204,19 @@ export default function EditApplicationScreen() {
         <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text>
       ) : null}
 
-      <Button title="Save Changes" onPress={handleSave} />
+      <Button
+        accessibilityLabel="Save application changes"
+        title="Save Changes"
+        onPress={handleSave}
+      />
 
       <View style={{ height: 10 }} />
 
-      <Button title="Back" onPress={() => router.back()} />
+      <Button
+        accessibilityLabel="Go back"
+        title="Back"
+        onPress={() => router.back()}
+      />
     </ScrollView>
   );
 }
