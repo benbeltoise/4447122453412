@@ -145,6 +145,7 @@ export default function CategoriesScreen() {
   }
 
   // CLAUDE.AI SECTION 2. LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
+  // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
   // fixed list of selectable colours
   const colorOptions = ["blue", "green", "purple", "orange", "red", "teal"];
 
@@ -174,7 +175,9 @@ export default function CategoriesScreen() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
       />
 
-      {/*CALUDE AI SECTION 3 LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698 */} 
+      {/*CLAUDE AI SECTION 3 LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698 
+        // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
+      */} 
       <Text>Color</Text>
       {/* selectable colour swatches — replaces the colour text input */}
       <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 12 }}>
@@ -264,6 +267,8 @@ export default function CategoriesScreen() {
       ) : (
         context.categories.map((item: any) => (
           // CLAUDE.AI SECTION 4: LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
+          // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
+
           <View
             key={item.id}
             style={{

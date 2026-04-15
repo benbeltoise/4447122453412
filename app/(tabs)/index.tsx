@@ -14,6 +14,8 @@ import { useContext, useEffect, useState } from "react";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 //CLAUDE.AI SECTION 1. LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
+  // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
+
 // icons from expo vector icons
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -186,6 +188,8 @@ export default function HomeScreen() {
 
           return (
             // CLAUDE.AI SECTION 2: LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
+              // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
+
             <View
               key={item.id}
               style={{
