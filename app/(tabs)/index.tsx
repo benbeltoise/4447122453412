@@ -13,6 +13,32 @@ import { useContext, useEffect, useState } from "react";
 // react native ui components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
+//CLAUDE.AI SECTION 1. LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
+// icons from expo vector icons
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+// map a saved icon string to a MaterialCommunityIcons name, with a fallback
+function getCategoryIcon(icon: string): React.ComponentProps<typeof MaterialCommunityIcons>["name"] {
+  const knownIcons: Record<string, React.ComponentProps<typeof MaterialCommunityIcons>["name"]> = {
+    briefcase: "briefcase",
+    home: "home",
+    car: "car",
+    food: "food",
+    heart: "heart",
+    star: "star",
+    school: "school",
+    shopping: "shopping",
+    gym: "dumbbell",
+    travel: "airplane",
+    money: "cash",
+    phone: "phone",
+  };
+  // return the matching icon or a fallback tag icon
+  return knownIcons[icon.toLowerCase()] ?? "tag";
+}
+
+// END OF CLAUDE.AI SECTION 1
+
 export default function HomeScreen() {
   const router = useRouter(); // navigation
   const context = useContext(ApplicationContext); //access global app state
@@ -159,20 +185,53 @@ export default function HomeScreen() {
           );
 
           return (
+            // CLAUDE.AI SECTION 2: LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
             <View
               key={item.id}
               style={{
                 borderWidth: 1,
+                borderLeftWidth: 6,
+                // use the category colour as the left border, grey if no category
+                borderLeftColor: category ? category.color : "#cccccc",
                 padding: 12,
                 marginBottom: 12,
               }}
             >
+              {/* category icon badge — shown only when a category exists */}
+              {category && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: category.color,
+                      borderRadius: 6,
+                      padding: 5,
+                      marginRight: 8,
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name={getCategoryIcon(category.icon)}
+                      size={16}
+                      color="white"
+                      accessibilityLabel={`${category.icon} icon`}
+                    />
+                  </View>
+                  <Text style={{ fontWeight: "bold" }}>{category.name}</Text>
+                </View>
+              )}
+
               <Text>Company: {item.company}</Text>
               <Text>Role: {item.role}</Text>
               <Text>Date Applied: {item.dateApplied}</Text>
               <Text>Status: {item.currentStatus}</Text>
               <Text>Effort Minutes: {item.effortMinutes}</Text>
               <Text>Salary Expectation: {item.salaryExpectation}</Text>
+              {/* category name still shown as text for the no-category fallback */}
               <Text>Category: {category ? category.name : "Unknown"}</Text>
               <Text>Notes: {item.notes}</Text>
 
@@ -192,6 +251,9 @@ export default function HomeScreen() {
                 onPress={() => handleDeleteApplication(item.id)}
               />
             </View>
+
+            // END OF CLAUDE.AI SECTION 2
+
           );
         })
       )}
