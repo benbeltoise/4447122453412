@@ -13,17 +13,31 @@ import { useContext, useEffect, useState } from "react";
 // react native ui components
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
+// convert minutes to hours and minutes
+function minutesToHoursMinutes(totalMinutes: number) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return { hours, minutes };
+}
+
+// convert hours and minutes to total minutes
+function hoursMinutesToMinutes(hours: string, minutes: string) {
+  return Number(hours || 0) * 60 + Number(minutes || 0);
+}
+
 export default function ProfileScreen() {
   const router = useRouter(); // nav
   const context = useContext(ApplicationContext); // global app state
 
   // weekly input states
   const [weeklyApplicationsTarget, setWeeklyApplicationsTarget] = useState("");
-  const [weeklyEffortTarget, setWeeklyEffortTarget] = useState("");
+  const [weeklyHours, setWeeklyHours] = useState("");
+  const [weeklyMinutes, setWeeklyMinutes] = useState("");
 
   // monthly input states
   const [monthlyApplicationsTarget, setMonthlyApplicationsTarget] = useState("");
-  const [monthlyEffortTarget, setMonthlyEffortTarget] = useState("");
+  const [monthlyHours, setMonthlyHours] = useState("");
+  const [monthlyMinutes, setMonthlyMinutes] = useState("");
 
   // current saved target rows
   const [currentWeeklyApplicationsTarget, setCurrentWeeklyApplicationsTarget] =
@@ -88,7 +102,11 @@ export default function ProfileScreen() {
 
     if (existingWeeklyEffortTarget) {
       setCurrentWeeklyEffortTarget(existingWeeklyEffortTarget);
-      setWeeklyEffortTarget(String(existingWeeklyEffortTarget.targetCount));
+      const { hours, minutes } = minutesToHoursMinutes(
+        existingWeeklyEffortTarget.targetCount
+      );
+      setWeeklyHours(String(hours));
+      setWeeklyMinutes(String(minutes));
     }
 
     if (existingMonthlyApplicationsTarget) {
@@ -100,7 +118,11 @@ export default function ProfileScreen() {
 
     if (existingMonthlyEffortTarget) {
       setCurrentMonthlyEffortTarget(existingMonthlyEffortTarget);
-      setMonthlyEffortTarget(String(existingMonthlyEffortTarget.targetCount));
+      const { hours, minutes } = minutesToHoursMinutes(
+        existingMonthlyEffortTarget.targetCount
+      );
+      setMonthlyHours(String(hours));
+      setMonthlyMinutes(String(minutes));
     }
   }, [context, router]);
 
@@ -155,7 +177,7 @@ export default function ProfileScreen() {
     await saveSingleTarget(
       "weekly",
       "effortMinutes",
-      weeklyEffortTarget,
+      String(hoursMinutesToMinutes(weeklyHours, weeklyMinutes)),
       currentWeeklyEffortTarget
     );
 
@@ -169,7 +191,7 @@ export default function ProfileScreen() {
     await saveSingleTarget(
       "monthly",
       "effortMinutes",
-      monthlyEffortTarget,
+      String(hoursMinutesToMinutes(monthlyHours, monthlyMinutes)),
       currentMonthlyEffortTarget
     );
 
@@ -217,20 +239,36 @@ export default function ProfileScreen() {
           : "Not set"}
       </Text>
 
-      <Text>Weekly Effort Target (minutes)</Text>
-      <TextInput
-        accessibilityLabel="Weekly Effort Target"
-        value={weeklyEffortTarget}
-        onChangeText={setWeeklyEffortTarget}
-        keyboardType="numeric"
-        placeholder="Enter weekly effort target"
-        style={{ borderWidth: 1, padding: 10, marginTop: 10, marginBottom: 10 }}
-      />
+      <Text>Weekly Effort Target</Text>
+
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+        <TextInput
+          accessibilityLabel="Weekly effort hours"
+          value={weeklyHours}
+          onChangeText={setWeeklyHours}
+          keyboardType="numeric"
+          placeholder="Hours"
+          style={{ flex: 1, borderWidth: 1, padding: 10 }}
+        />
+
+        <TextInput
+          accessibilityLabel="Weekly effort minutes"
+          value={weeklyMinutes}
+          onChangeText={setWeeklyMinutes}
+          keyboardType="numeric"
+          placeholder="Minutes"
+          style={{ flex: 1, borderWidth: 1, padding: 10 }}
+        />
+      </View>
 
       <Text style={{ marginBottom: 20 }}>
-        Current Weekly Effort Target:{" "}
         {currentWeeklyEffortTarget
-          ? currentWeeklyEffortTarget.targetCount
+          ? (() => {
+              const { hours, minutes } = minutesToHoursMinutes(
+                currentWeeklyEffortTarget.targetCount
+              );
+              return `Current Weekly Effort Target: ${hours}h ${minutes}m`;
+            })()
           : "Not set"}
       </Text>
 
@@ -253,20 +291,36 @@ export default function ProfileScreen() {
           : "Not set"}
       </Text>
 
-      <Text>Monthly Effort Target (minutes)</Text>
-      <TextInput
-        accessibilityLabel="Monthly Effort Target"
-        value={monthlyEffortTarget}
-        onChangeText={setMonthlyEffortTarget}
-        keyboardType="numeric"
-        placeholder="Enter monthly effort target"
-        style={{ borderWidth: 1, padding: 10, marginTop: 10, marginBottom: 10 }}
-      />
+      <Text>Monthly Effort Target</Text>
+
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+        <TextInput
+          accessibilityLabel="Monthly effort hours"
+          value={monthlyHours}
+          onChangeText={setMonthlyHours}
+          keyboardType="numeric"
+          placeholder="Hours"
+          style={{ flex: 1, borderWidth: 1, padding: 10 }}
+        />
+
+        <TextInput
+          accessibilityLabel="Monthly effort minutes"
+          value={monthlyMinutes}
+          onChangeText={setMonthlyMinutes}
+          keyboardType="numeric"
+          placeholder="Minutes"
+          style={{ flex: 1, borderWidth: 1, padding: 10 }}
+        />
+      </View>
 
       <Text style={{ marginBottom: 20 }}>
-        Current Monthly Effort Target:{" "}
         {currentMonthlyEffortTarget
-          ? currentMonthlyEffortTarget.targetCount
+          ? (() => {
+              const { hours, minutes } = minutesToHoursMinutes(
+                currentMonthlyEffortTarget.targetCount
+              );
+              return `Current Monthly Effort Target: ${hours}h ${minutes}m`;
+            })()
           : "Not set"}
       </Text>
 

@@ -51,9 +51,6 @@ export default function EditApplicationScreen() {
   const [company, setCompany] = useState(application.company);
   const [role, setRole] = useState(application.role);
   const [dateApplied, setDateApplied] = useState(application.dateApplied);
-  const [effortMinutes, setEffortMinutes] = useState(
-    String(application.effortMinutes)
-  );
   const [salaryExpectation, setSalaryExpectation] = useState(
     String(application.salaryExpectation)
   );
@@ -65,6 +62,16 @@ export default function EditApplicationScreen() {
   // error message state
   const [error, setError] = useState("");
 
+  // splitting effortMInutes into hours and minutes for easier input for the usre
+  // split existing minutes into hours + minutes
+const initialMinutes = application.effortMinutes || 0;
+const [effortHours, setEffortHours] = useState(
+  String(Math.floor(initialMinutes / 60))
+);
+const [effortMins, setEffortMins] = useState(
+  String(initialMinutes % 60)
+);
+
   // save updated application
   async function handleSave() {
     setError("");
@@ -75,7 +82,10 @@ export default function EditApplicationScreen() {
       return;
     }
 
-    if (!effortMinutes || !salaryExpectation) {
+    if (
+      (effortHours === "" && effortMins === "") ||
+      !salaryExpectation
+    ) {
       setError("Fill in effort minutes and salary");
       return;
     }
@@ -97,7 +107,7 @@ export default function EditApplicationScreen() {
         company: company,
         role: role,
         dateApplied: dateApplied,
-        effortMinutes: Number(effortMinutes),
+        effortMinutes: Number(effortHours || 0) * 60 + Number(effortMins || 0),
         salaryExpectation: Number(salaryExpectation),
         categoryId: selectedCategoryId,
         currentStatus: status,
@@ -151,14 +161,30 @@ export default function EditApplicationScreen() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
       />
 
-      <Text>Effort Minutes</Text>
-      <TextInput
-        accessibilityLabel="Effort Minutes"
-        value={effortMinutes}
-        onChangeText={setEffortMinutes}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-      />
+      <Text>Effort</Text>
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}>
+        <View style={{ flex: 1 }}>
+          <Text>Hours</Text>
+          <TextInput
+            accessibilityLabel="Effort hours"
+            value={effortHours}
+            onChangeText={setEffortHours}
+            keyboardType="numeric"
+            style={{ borderWidth: 1, padding: 10 }}
+          />
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <Text>Minutes</Text>
+          <TextInput
+            accessibilityLabel="Effort minutes"
+            value={effortMins}
+            onChangeText={setEffortMins}
+            keyboardType="numeric"
+            style={{ borderWidth: 1, padding: 10 }}
+          />
+        </View>
+      </View>
 
       <Text>Salary Expectation</Text>
       <TextInput

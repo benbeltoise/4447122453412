@@ -19,8 +19,9 @@ export default function AddScreen() {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [dateApplied, setDateApplied] = useState("");
-  const [effortMinutes, setEffortMinutes] = useState("");
   const [salaryExpectation, setSalaryExpectation] = useState("");
+  const [effortHours, setEffortHours] = useState("");
+  const [effortMins, setEffortMins] = useState("");
 
   // selected status option
   const [selectedStatusOption, setSelectedStatusOption] = useState("applied");
@@ -62,8 +63,11 @@ export default function AddScreen() {
       return;
     }
 
-    if (!effortMinutes || !salaryExpectation) {
-      setError("Fill in effort minutes and salary");
+    if (
+      (effortHours === "" && effortMins === "") ||
+      !salaryExpectation
+    ) {
+    setError("Fill in effort minutes and salary");
       return;
     }
 
@@ -87,7 +91,7 @@ export default function AddScreen() {
         company: company,
         role: role,
         dateApplied: dateApplied,
-        effortMinutes: Number(effortMinutes),
+        effortMinutes: Number(effortHours || 0) * 60 + Number(effortMins || 0),
         salaryExpectation: Number(salaryExpectation),
         categoryId: selectedCategoryId,
         currentStatus: finalStatus.trim(),
@@ -143,14 +147,31 @@ export default function AddScreen() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
       />
 
-      <Text>Effort Minutes</Text>
-      <TextInput
-        accessibilityLabel="Effort Minutes"
-        value={effortMinutes}
-        onChangeText={setEffortMinutes}
-        keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 12 }}
-      />
+      <Text>Effort</Text>
+
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}>
+        <View style={{ flex: 1 }}>
+          <Text>Hours</Text>
+          <TextInput
+            accessibilityLabel="Effort hours"
+            value={effortHours}
+            onChangeText={setEffortHours}
+            keyboardType="numeric"
+            style={{ borderWidth: 1, padding: 10 }}
+          />
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <Text>Minutes</Text>
+          <TextInput
+            accessibilityLabel="Effort minutes"
+            value={effortMins}
+            onChangeText={setEffortMins}
+            keyboardType="numeric"
+            style={{ borderWidth: 1, padding: 10 }}
+          />
+        </View>
+      </View>
 
       <Text>Salary Expectation</Text>
       <TextInput
