@@ -115,6 +115,28 @@ export default function HomeScreen() {
     0
   );
 
+  // helper to format minutes into hours and minutes
+  function formatMinutes(mins: number) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}m`;
+    return `${h}h ${m}m`;
+  }
+
+  // helper to get progress width
+  function getProgressWidth(actual: number, target: number) {
+    if (target <= 0) return 0;
+    return Math.min((actual / target) * 100, 100);
+  }
+
+  // helper to get progress colour
+  function getProgressColor(actual: number, target: number) {
+    if (target <= 0) return "gray";
+    if (actual < target) return "orange";
+    if (actual === target) return "green";
+    return "blue";
+  }
+
   // status filter options
   const statuses = ["All", "applied", "interviewing", "rejected"];
 
@@ -148,10 +170,60 @@ export default function HomeScreen() {
         {applicationsTarget ? applicationsTarget.targetCount : "-"}
       </Text>
 
-      <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Effort this week: {effortMinutes} mins /{" "}
-        {effortTarget ? effortTarget.targetCount : "-"}
+      {applicationsTarget ? (
+        <View
+          style={{
+            height: 20,
+            backgroundColor: "#ddd",
+            marginTop: 4,
+            marginBottom: 12,
+          }}
+        >
+          <View
+            style={{
+              height: 20,
+              width: `${getProgressWidth(
+                applicationsCount,
+                applicationsTarget.targetCount
+              )}%`,
+              backgroundColor: getProgressColor(
+                applicationsCount,
+                applicationsTarget.targetCount
+              ),
+            }}
+          />
+        </View>
+      ) : null}
+
+      <Text style={{ fontSize: 18, marginBottom: 10 }}>
+        Effort this week: {formatMinutes(effortMinutes)} /{" "}
+        {effortTarget ? formatMinutes(effortTarget.targetCount) : "-"}
       </Text>
+
+      {effortTarget ? (
+        <View
+          style={{
+            height: 20,
+            backgroundColor: "#ddd",
+            marginTop: 4,
+            marginBottom: 20,
+          }}
+        >
+          <View
+            style={{
+              height: 20,
+              width: `${getProgressWidth(
+                effortMinutes,
+                effortTarget.targetCount
+              )}%`,
+              backgroundColor: getProgressColor(
+                effortMinutes,
+                effortTarget.targetCount
+              ),
+            }}
+          />
+        </View>
+      ) : null}
 
       <TextInput
         accessibilityLabel="Search applications"
