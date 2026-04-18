@@ -14,7 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 //CLAUDE.AI SECTION 1. LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
-  // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
+// Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
 
 // icons from expo vector icons
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -49,6 +49,10 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   // select status filter
   const [selectedStatus, setSelectedStatus] = useState("All");
+
+  // date filter states
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   // check auth when loading
   useEffect(() => {
@@ -114,7 +118,7 @@ export default function HomeScreen() {
   // status filter options
   const statuses = ["All", "applied", "interviewing", "rejected"];
 
-  // filter applications by search words and status
+  // filter applications by search, status, and date range
   const filteredApplications = context.applications.filter((item: any) => {
     const matchesSearch =
       item.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,7 +128,14 @@ export default function HomeScreen() {
     const matchesStatus =
       selectedStatus === "All" || item.currentStatus === selectedStatus;
 
-    return matchesSearch && matchesStatus;
+    // simple date filtering using string comparison
+    const matchesFromDate =
+      !fromDate || item.dateApplied >= fromDate;
+
+    const matchesToDate =
+      !toDate || item.dateApplied <= toDate;
+
+    return matchesSearch && matchesStatus && matchesFromDate && matchesToDate;
   });
 
   // html and css to render
@@ -152,6 +163,25 @@ export default function HomeScreen() {
           padding: 10,
           marginBottom: 10,
         }}
+      />
+
+      {/* date filters */}
+      <Text>From Date</Text>
+      <TextInput
+        accessibilityLabel="Filter from date"
+        value={fromDate}
+        onChangeText={setFromDate}
+        placeholder="YYYY-MM-DD"
+        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+      />
+
+      <Text>To Date</Text>
+      <TextInput
+        accessibilityLabel="Filter to date"
+        value={toDate}
+        onChangeText={setToDate}
+        placeholder="YYYY-MM-DD"
+        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
       />
 
       <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}>
@@ -187,21 +217,16 @@ export default function HomeScreen() {
           );
 
           return (
-            // CLAUDE.AI SECTION 2: LINK TO CHAT: https://claude.ai/share/bc07d173-4d9d-42c0-a957-cc5156f3c698
-              // Used to refine UI & UX by making user iteractions simpler and easier. No adaptions were made from the generated code
-
             <View
               key={item.id}
               style={{
                 borderWidth: 1,
                 borderLeftWidth: 6,
-                // use the category colour as the left border, grey if no category
                 borderLeftColor: category ? category.color : "#cccccc",
                 padding: 12,
                 marginBottom: 12,
               }}
             >
-              {/* category icon badge — shown only when a category exists */}
               {category && (
                 <View
                   style={{
@@ -235,7 +260,6 @@ export default function HomeScreen() {
               <Text>Status: {item.currentStatus}</Text>
               <Text>Effort Minutes: {item.effortMinutes}</Text>
               <Text>Salary Expectation: {item.salaryExpectation}</Text>
-              {/* category name still shown as text for the no-category fallback */}
               <Text>Category: {category ? category.name : "Unknown"}</Text>
               <Text>Notes: {item.notes}</Text>
 
@@ -255,9 +279,6 @@ export default function HomeScreen() {
                 onPress={() => handleDeleteApplication(item.id)}
               />
             </View>
-
-            // END OF CLAUDE.AI SECTION 2
-
           );
         })
       )}

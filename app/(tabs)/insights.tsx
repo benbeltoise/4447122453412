@@ -10,7 +10,7 @@ import { Button, ScrollView, Text, View } from "react-native";
 export default function InsightsScreen() {
   const context = useContext(ApplicationContext); // access global state
 
-  // chosen time range (daily / weekly / monthly)
+  // chosen time range (weekly / monthly)
   const [selectedRange, setSelectedRange] = useState("weekly");
 
   // Loading state if context not ready
@@ -24,14 +24,26 @@ export default function InsightsScreen() {
 
   const now = new Date(); // current date
 
+  // helper to format minutes into hours and minutes
+  function formatMinutes(mins: number) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}m`;
+    return `${h}h ${m}m`;
+  }
+
+  // simple status colour mapping
+  function getStatusColor(status: string) {
+    const s = status.toLowerCase();
+    if (s.includes("applied")) return "blue";
+    if (s.includes("interview")) return "green";
+    if (s.includes("rejected")) return "red";
+    return "gray";
+  }
+
   // Filter applications based on selected time range
   const filteredApplications = context.applications.filter((app: any) => {
     const appDate = new Date(app.dateApplied);
-
-    // Daily
-    if (selectedRange === "daily") {
-      return appDate.toDateString() === now.toDateString();
-    }
 
     // Weekly
     if (selectedRange === "weekly") {
@@ -43,7 +55,7 @@ export default function InsightsScreen() {
     // Monthly
     if (selectedRange === "monthly") {
       const oneMonthAgo = new Date();
-      oneMonthAgo.setDate(now.getDate() - 30);
+      oneMonthAgo.setMonth(now.getMonth() - 1);
       return appDate >= oneMonthAgo;
     }
 
@@ -60,16 +72,15 @@ export default function InsightsScreen() {
   );
 
   // Count how many applications involve interviews
-  // by checking if the status contains the word "interview"
   const interviewCount = filteredApplications.filter((app: any) =>
     String(app.currentStatus).toLowerCase().includes("interview")
   ).length;
 
-  // Calculate effort per interview (avoiding dividing by 0)
+  // Calculate effort per interview
   const effortPerInterview =
     interviewCount > 0 ? Math.round(effortMinutes / interviewCount) : 0;
 
-  // get the correct application target for the selected range
+  // get targets
   const applicationsTarget = context.targets.find(
     (item: any) =>
       item.userId === context.currentUser.id &&
@@ -77,7 +88,6 @@ export default function InsightsScreen() {
       item.metricType === "applications"
   );
 
-  // get the correct effort target for the selected range
   const effortTarget = context.targets.find(
     (item: any) =>
       item.userId === context.currentUser.id &&
@@ -85,18 +95,15 @@ export default function InsightsScreen() {
       item.metricType === "effortMinutes"
   );
 
-  // actual target values
   const applicationsTargetValue = applicationsTarget
     ? applicationsTarget.targetCount
     : 0;
 
   const effortTargetValue = effortTarget ? effortTarget.targetCount : 0;
 
-  // remaining amounts
   const applicationsRemaining = applicationsTargetValue - applicationsCount;
   const effortRemaining = effortTargetValue - effortMinutes;
 
-  // application target status
   let applicationsTargetStatus = "Not set";
 
   if (applicationsTargetValue > 0) {
@@ -109,7 +116,6 @@ export default function InsightsScreen() {
     }
   }
 
-  // effort target status
   let effortTargetStatus = "Not set";
 
   if (effortTargetValue > 0) {
@@ -122,12 +128,11 @@ export default function InsightsScreen() {
     }
   }
 
-  // Get all statuses from filtered applications
+  // build status list
   const allStatuses = filteredApplications.map(
     (app: any) => app.currentStatus || "unknown"
   );
 
-  // build a unique status list manually
   const uniqueStatuses: string[] = [];
 
   allStatuses.forEach((status: string) => {
@@ -136,19 +141,16 @@ export default function InsightsScreen() {
     }
   });
 
-  // Count how many applications belong to each status
+  // count per status
   const statusData = uniqueStatuses.map((status: string) => {
     const count = filteredApplications.filter(
       (app: any) => (app.currentStatus || "unknown") === status
     ).length;
 
-    return {
-      status,
-      count,
-    };
+    return { status, count };
   });
 
-  // Find the highest status count for scaling the main bar chart
+  // max count for bar scaling
   let maxStatusCount = 1;
 
   statusData.forEach((item: any) => {
@@ -157,68 +159,18 @@ export default function InsightsScreen() {
     }
   });
 
-  // convert count to percentage width for the main bar chart
   function getBarWidth(count: number) {
     return (count / maxStatusCount) * 100;
   }
 
-  // build effort totals for each status
-  const effortByStatus = uniqueStatuses.map((status: string) => {
-    const totalEffort = filteredApplications
-      .filter((app: any) => (app.currentStatus || "unknown") === status)
-      .reduce((sum: number, app: any) => sum + app.effortMinutes, 0);
-
-    return {
-      status,
-      totalEffort,
-    };
-  });
-
-  // build percentage distribution for statuses
-  const statusDistribution = statusData.map((item: any) => {
-    const percentage =
-      applicationsCount > 0
-        ? Math.round((item.count / applicationsCount) * 100)
-        : 0;
-
-    return {
-      status: item.status,
-      count: item.count,
-      percentage,
-    };
-  });
-
-  // build percentage distribution for effort by status
-  const effortDistribution = effortByStatus.map((item: any) => {
-    const percentage =
-      effortMinutes > 0
-        ? Math.round((item.totalEffort / effortMinutes) * 100)
-        : 0;
-
-    return {
-      status: item.status,
-      totalEffort: item.totalEffort,
-      percentage,
-    };
-  });
-
   // html & css to render
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
-      {/* Screen title */}
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Insights</Text>
 
-      {/* Time range selector buttons */}
-      <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}>
-        <View style={{ marginRight: 10, marginBottom: 10 }}>
-          <Button
-            accessibilityLabel="Show daily insights"
-            title="Daily"
-            onPress={() => setSelectedRange("daily")}
-          />
-        </View>
-
-        <View style={{ marginRight: 10, marginBottom: 10 }}>
+      {/* range buttons */}
+      <View style={{ flexDirection: "row", marginBottom: 20 }}>
+        <View style={{ marginRight: 10 }}>
           <Button
             accessibilityLabel="Show weekly insights"
             title="Weekly"
@@ -226,7 +178,7 @@ export default function InsightsScreen() {
           />
         </View>
 
-        <View style={{ marginRight: 10, marginBottom: 10 }}>
+        <View>
           <Button
             accessibilityLabel="Show monthly insights"
             title="Monthly"
@@ -235,18 +187,16 @@ export default function InsightsScreen() {
         </View>
       </View>
 
-      {/* Show selected range */}
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
         Selected Range: {selectedRange}
       </Text>
 
-      {/* Summary metrics */}
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
         Applications: {applicationsCount}
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
-        Effort: {effortMinutes} mins
+        Effort: {formatMinutes(effortMinutes)}
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
@@ -254,51 +204,48 @@ export default function InsightsScreen() {
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Effort Minutes per Interview:{" "}
-        {interviewCount > 0 ? effortPerInterview : "No interviews yet"}
+        Effort per Interview:{" "}
+        {interviewCount > 0
+          ? formatMinutes(effortPerInterview)
+          : "No interviews yet"}
       </Text>
 
       <Text style={{ fontSize: 20, marginBottom: 10 }}>Target Progress</Text>
 
-      <Text style={{ fontSize: 16, marginBottom: 6 }}>
-        Applications Target:{" "}
-        {applicationsTargetValue > 0 ? applicationsTargetValue : "Not set"}
-      </Text>
+      <Text>Applications Target: {applicationsTargetValue || "Not set"}</Text>
+      <Text>Applications Status: {applicationsTargetStatus}</Text>
 
-      <Text style={{ fontSize: 16, marginBottom: 6 }}>
-        Applications Status: {applicationsTargetStatus}
-      </Text>
-
-      {applicationsTargetValue > 0 ? (
-        <Text style={{ fontSize: 16, marginBottom: 12 }}>
+      {applicationsTargetValue > 0 && (
+        <Text style={{ marginBottom: 12 }}>
           {applicationsCount > applicationsTargetValue
-            ? `Exceeded by: ${applicationsCount - applicationsTargetValue}`
-            : `Remaining: ${applicationsRemaining}`}
+            ? `Exceeded by ${applicationsCount - applicationsTargetValue}`
+            : `Remaining ${applicationsRemaining}`}
         </Text>
-      ) : null}
+      )}
 
-      <Text style={{ fontSize: 16, marginBottom: 6 }}>
+      <Text>
         Effort Target:{" "}
-        {effortTargetValue > 0 ? `${effortTargetValue} mins` : "Not set"}
+        {effortTargetValue > 0
+          ? formatMinutes(effortTargetValue)
+          : "Not set"}
       </Text>
 
-      <Text style={{ fontSize: 16, marginBottom: 6 }}>
-        Effort Status: {effortTargetStatus}
-      </Text>
+      <Text>Effort Status: {effortTargetStatus}</Text>
 
-      {effortTargetValue > 0 ? (
-        <Text style={{ fontSize: 16, marginBottom: 20 }}>
+      {effortTargetValue > 0 && (
+        <Text style={{ marginBottom: 20 }}>
           {effortMinutes > effortTargetValue
-            ? `Exceeded by: ${effortMinutes - effortTargetValue} mins`
-            : `Remaining: ${effortRemaining} mins`}
+            ? `Exceeded by ${formatMinutes(
+                effortMinutes - effortTargetValue
+              )}`
+            : `Remaining ${formatMinutes(effortRemaining)}`}
         </Text>
-      ) : null}
+      )}
 
-      {/* Main status count chart */}
       <Text style={{ fontSize: 20, marginBottom: 10 }}>Status Chart</Text>
 
       {statusData.length === 0 ? (
-        <Text>No applications in this time range</Text>
+        <Text>No applications found for this time range</Text>
       ) : (
         statusData.map((item: any) => (
           <View key={item.status} style={{ marginBottom: 12 }}>
@@ -306,84 +253,12 @@ export default function InsightsScreen() {
               {item.status}: {item.count}
             </Text>
 
-            <View
-              style={{
-                height: 20,
-                backgroundColor: "#ddd",
-                marginTop: 4,
-              }}
-            >
+            <View style={{ height: 20, backgroundColor: "#ddd" }}>
               <View
                 style={{
                   height: 20,
                   width: `${getBarWidth(item.count)}%`,
-                  backgroundColor: "blue",
-                }}
-              />
-            </View>
-          </View>
-        ))
-      )}
-
-      {/* Status distribution section */}
-      <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 10 }}>
-        Status Distribution
-      </Text>
-
-      {statusDistribution.length === 0 ? (
-        <Text>No status data available</Text>
-      ) : (
-        statusDistribution.map((item: any) => (
-          <View key={item.status} style={{ marginBottom: 12 }}>
-            <Text>
-              {item.status}: {item.count} applications ({item.percentage}%)
-            </Text>
-
-            <View
-              style={{
-                height: 20,
-                backgroundColor: "#ddd",
-                marginTop: 4,
-              }}
-            >
-              <View
-                style={{
-                  height: 20,
-                  width: `${item.percentage}%`,
-                  backgroundColor: "green",
-                }}
-              />
-            </View>
-          </View>
-        ))
-      )}
-
-      {/* Effort distribution section */}
-      <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 10 }}>
-        Effort Distribution by Status
-      </Text>
-
-      {effortDistribution.length === 0 ? (
-        <Text>No effort data available</Text>
-      ) : (
-        effortDistribution.map((item: any) => (
-          <View key={item.status} style={{ marginBottom: 12 }}>
-            <Text>
-              {item.status}: {item.totalEffort} mins ({item.percentage}%)
-            </Text>
-
-            <View
-              style={{
-                height: 20,
-                backgroundColor: "#ddd",
-                marginTop: 4,
-              }}
-            >
-              <View
-                style={{
-                  height: 20,
-                  width: `${item.percentage}%`,
-                  backgroundColor: "orange",
+                  backgroundColor: getStatusColor(item.status),
                 }}
               />
             </View>
