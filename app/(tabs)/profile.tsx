@@ -15,43 +15,75 @@ import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 // convert minutes to hours and minutes
 function minutesToHoursMinutes(totalMinutes: number) {
+  // get full hours from total minutes
   const hours = Math.floor(totalMinutes / 60);
+  // get remaining minutes after hours
   const minutes = totalMinutes % 60;
+  // return both values as an object
   return { hours, minutes };
 }
 
 // convert hours and minutes to total minutes
 function hoursMinutesToMinutes(hours: string, minutes: string) {
+  // convert input strings into one total minutes value
   return Number(hours || 0) * 60 + Number(minutes || 0);
 }
 
 export default function ProfileScreen() {
+  // get router for screen navigation
   const router = useRouter(); // nav
+  // get access to global app state
   const context = useContext(ApplicationContext); // global app state
 
   // weekly input states
+  // store weekly applications target input
   const [weeklyApplicationsTarget, setWeeklyApplicationsTarget] = useState("");
+  // store weekly effort hours input
   const [weeklyHours, setWeeklyHours] = useState("");
+  // store weekly effort minutes input
   const [weeklyMinutes, setWeeklyMinutes] = useState("");
 
   // monthly input states
+  // store monthly applications target input
   const [monthlyApplicationsTarget, setMonthlyApplicationsTarget] = useState("");
+  // store monthly effort hours input
   const [monthlyHours, setMonthlyHours] = useState("");
+  // store monthly effort minutes input
   const [monthlyMinutes, setMonthlyMinutes] = useState("");
 
   // current saved target rows
+  // store saved weekly applications target row
   const [currentWeeklyApplicationsTarget, setCurrentWeeklyApplicationsTarget] =
     useState<any>(null);
+  // store saved weekly effort target row
   const [currentWeeklyEffortTarget, setCurrentWeeklyEffortTarget] =
     useState<any>(null);
+  // store saved monthly applications target row
   const [currentMonthlyApplicationsTarget, setCurrentMonthlyApplicationsTarget] =
     useState<any>(null);
+  // store saved monthly effort target row
   const [currentMonthlyEffortTarget, setCurrentMonthlyEffortTarget] =
     useState<any>(null);
 
+  // app colours
+  // page background colour
+  const backgroundColor = "#F7F9FC";
+  // card background colour
+  const cardColor = "#FFFFFF";
+  // main brand colour
+  const primaryColor = "#2F6FED";
+  // main text colour
+  const textColor = "#1F2937";
+  // muted text colour
+  const mutedTextColor = "#6B7280";
+  // border colour for cards and inputs
+  const borderColor = "#D1D5DB";
+
   // run when screen loads or context changes
   useEffect(() => {
+    // stop if context is not ready yet
     if (!context) return;
+    // stop if app data is still loading
     if (!context.isReady) return;
 
     // redirect user if not logged in
@@ -63,65 +95,89 @@ export default function ProfileScreen() {
     // get existing weekly application target
     const existingWeeklyApplicationsTarget = context.targets.find(
       (item: any) =>
+        // target must belong to current user
         item.userId === context.currentUser.id &&
+        // target must be weekly
         item.periodType === "weekly" &&
+        // target must be for applications count
         item.metricType === "applications"
     );
 
     // get existing weekly effort target
     const existingWeeklyEffortTarget = context.targets.find(
       (item: any) =>
+        // target must belong to current user
         item.userId === context.currentUser.id &&
+        // target must be weekly
         item.periodType === "weekly" &&
+        // target must be for effort minutes
         item.metricType === "effortMinutes"
     );
 
     // get existing monthly application target
     const existingMonthlyApplicationsTarget = context.targets.find(
       (item: any) =>
+        // target must belong to current user
         item.userId === context.currentUser.id &&
+        // target must be monthly
         item.periodType === "monthly" &&
+        // target must be for applications count
         item.metricType === "applications"
     );
 
     // get existing monthly effort target
     const existingMonthlyEffortTarget = context.targets.find(
       (item: any) =>
+        // target must belong to current user
         item.userId === context.currentUser.id &&
+        // target must be monthly
         item.periodType === "monthly" &&
+        // target must be for effort minutes
         item.metricType === "effortMinutes"
     );
 
     // load into state if found
     if (existingWeeklyApplicationsTarget) {
+      // store current weekly applications target row
       setCurrentWeeklyApplicationsTarget(existingWeeklyApplicationsTarget);
+      // prefill weekly applications input
       setWeeklyApplicationsTarget(
         String(existingWeeklyApplicationsTarget.targetCount)
       );
     }
 
     if (existingWeeklyEffortTarget) {
+      // store current weekly effort target row
       setCurrentWeeklyEffortTarget(existingWeeklyEffortTarget);
+      // convert stored minutes into hours and minutes inputs
       const { hours, minutes } = minutesToHoursMinutes(
         existingWeeklyEffortTarget.targetCount
       );
+      // prefill weekly hours input
       setWeeklyHours(String(hours));
+      // prefill weekly minutes input
       setWeeklyMinutes(String(minutes));
     }
 
     if (existingMonthlyApplicationsTarget) {
+      // store current monthly applications target row
       setCurrentMonthlyApplicationsTarget(existingMonthlyApplicationsTarget);
+      // prefill monthly applications input
       setMonthlyApplicationsTarget(
         String(existingMonthlyApplicationsTarget.targetCount)
       );
     }
 
     if (existingMonthlyEffortTarget) {
+      // store current monthly effort target row
       setCurrentMonthlyEffortTarget(existingMonthlyEffortTarget);
+      // convert stored minutes into hours and minutes inputs
       const { hours, minutes } = minutesToHoursMinutes(
         existingMonthlyEffortTarget.targetCount
       );
+      // prefill monthly hours input
       setMonthlyHours(String(hours));
+      // prefill monthly minutes input
       setMonthlyMinutes(String(minutes));
     }
   }, [context, router]);
@@ -129,8 +185,10 @@ export default function ProfileScreen() {
   // loading state
   if (!context || !context.currentUser) {
     return (
-      <View style={{ padding: 20 }}>
-        <Text>Loading...</Text>
+      // loading container
+      <View style={{ padding: 20, backgroundColor, flex: 1 }}>
+        {/* loading text */}
+        <Text style={{ color: textColor }}>Loading...</Text>
       </View>
     );
   }
@@ -142,24 +200,37 @@ export default function ProfileScreen() {
     value: string,
     currentTarget: any
   ) {
+    // do nothing if no value was entered
     if (!value) return;
 
+    // update existing target if it already exists
     if (currentTarget) {
       await db
         .update(targets)
         .set({
+          // save period type
           periodType: periodType,
+          // save metric type
           metricType: metricType,
+          // save numeric target value
           targetCount: Number(value),
         })
+        // update the matching target row only
         .where(eq(targets.id, currentTarget.id));
     } else {
+      // otherwise create a new target row
       await db.insert(targets).values({
+        // link target to current user
         userId: context.currentUser.id,
+        // save period type
         periodType: periodType,
+        // save metric type
         metricType: metricType,
+        // save numeric target value
         targetCount: Number(value),
+        // no category-specific target
         categoryId: null,
+        // store creation date
         createdAt: new Date().toISOString(),
       });
     }
@@ -167,6 +238,7 @@ export default function ProfileScreen() {
 
   // save all targets
   async function handleSaveTargets() {
+    // save weekly applications target
     await saveSingleTarget(
       "weekly",
       "applications",
@@ -174,6 +246,7 @@ export default function ProfileScreen() {
       currentWeeklyApplicationsTarget
     );
 
+    // save weekly effort target in minutes
     await saveSingleTarget(
       "weekly",
       "effortMinutes",
@@ -181,6 +254,7 @@ export default function ProfileScreen() {
       currentWeeklyEffortTarget
     );
 
+    // save monthly applications target
     await saveSingleTarget(
       "monthly",
       "applications",
@@ -188,6 +262,7 @@ export default function ProfileScreen() {
       currentMonthlyApplicationsTarget
     );
 
+    // save monthly effort target in minutes
     await saveSingleTarget(
       "monthly",
       "effortMinutes",
@@ -201,146 +276,386 @@ export default function ProfileScreen() {
 
   // delete logged-in user's profile
   async function handleDeleteProfile() {
+    // delete current user profile and related data
     await context.deleteProfile();
+    // go back to login screen
     router.replace("/login" as any);
   }
 
   // log user out
   function handleLogout() {
+    // clear current session from context
     context.logout();
+    // go back to login screen
     router.replace("/login" as any);
   }
 
   // html/css to render
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Profile</Text>
-      <Text>Name: {context.currentUser.name}</Text>
-      <Text style={{ marginBottom: 20 }}>
-        Email: {context.currentUser.email}
+    // main scrollable page container
+    <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>
+      {/* app brand title */}
+      <Text
+        style={{
+          // title size
+          fontSize: 30,
+          // small spacing below title
+          marginBottom: 4,
+          // brand colour
+          color: primaryColor,
+          // bold title text
+          fontWeight: "bold",
+        }}
+      >
+        Appli
       </Text>
 
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>Weekly Targets</Text>
-
-      <Text>Weekly Applications Target</Text>
-      <TextInput
-        accessibilityLabel="Weekly Applications Target"
-        value={weeklyApplicationsTarget}
-        onChangeText={setWeeklyApplicationsTarget}
-        keyboardType="numeric"
-        placeholder="Enter weekly applications target"
-        style={{ borderWidth: 1, padding: 10, marginTop: 10, marginBottom: 10 }}
-      />
-
-      <Text style={{ marginBottom: 20 }}>
-        Current Weekly Applications Target:{" "}
-        {currentWeeklyApplicationsTarget
-          ? currentWeeklyApplicationsTarget.targetCount
-          : "Not set"}
+      {/* app subtitle */}
+      <Text
+        style={{
+          // subtitle size
+          fontSize: 16,
+          // spacing below subtitle
+          marginBottom: 20,
+          // muted text colour
+          color: mutedTextColor,
+        }}
+      >
+        job application tracker
       </Text>
 
-      <Text>Weekly Effort Target</Text>
+      {/* page heading */}
+      <Text style={{ fontSize: 24, marginBottom: 20, color: textColor }}>
+        Profile
+      </Text>
 
-      <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
-        <TextInput
-          accessibilityLabel="Weekly effort hours"
-          value={weeklyHours}
-          onChangeText={setWeeklyHours}
-          keyboardType="numeric"
-          placeholder="Hours"
-          style={{ flex: 1, borderWidth: 1, padding: 10 }}
-        />
-
-        <TextInput
-          accessibilityLabel="Weekly effort minutes"
-          value={weeklyMinutes}
-          onChangeText={setWeeklyMinutes}
-          keyboardType="numeric"
-          placeholder="Minutes"
-          style={{ flex: 1, borderWidth: 1, padding: 10 }}
-        />
+      {/* user details card */}
+      <View
+        style={{
+          // card background colour
+          backgroundColor: cardColor,
+          // thin card border
+          borderWidth: 1,
+          // border colour
+          borderColor: borderColor,
+          // rounded corners
+          borderRadius: 10,
+          // inner spacing
+          padding: 14,
+          // spacing below card
+          marginBottom: 20,
+        }}
+      >
+        {/* current user's name */}
+        <Text style={{ color: textColor, marginBottom: 6 }}>
+          Name: {context.currentUser.name}
+        </Text>
+        {/* current user's email */}
+        <Text style={{ color: textColor }}>
+          Email: {context.currentUser.email}
+        </Text>
       </View>
 
-      <Text style={{ marginBottom: 20 }}>
-        {currentWeeklyEffortTarget
-          ? (() => {
-              const { hours, minutes } = minutesToHoursMinutes(
-                currentWeeklyEffortTarget.targetCount
-              );
-              return `Current Weekly Effort Target: ${hours}h ${minutes}m`;
-            })()
-          : "Not set"}
-      </Text>
+      {/* weekly targets card */}
+      <View
+        style={{
+          // card background colour
+          backgroundColor: cardColor,
+          // thin card border
+          borderWidth: 1,
+          // border colour
+          borderColor: borderColor,
+          // rounded corners
+          borderRadius: 10,
+          // inner spacing
+          padding: 14,
+          // spacing below card
+          marginBottom: 20,
+        }}
+      >
+        {/* section heading */}
+        <Text style={{ fontSize: 20, marginBottom: 10, color: textColor }}>
+          Weekly Targets
+        </Text>
 
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>Monthly Targets</Text>
-
-      <Text>Monthly Applications Target</Text>
-      <TextInput
-        accessibilityLabel="Monthly Applications Target"
-        value={monthlyApplicationsTarget}
-        onChangeText={setMonthlyApplicationsTarget}
-        keyboardType="numeric"
-        placeholder="Enter monthly applications target"
-        style={{ borderWidth: 1, padding: 10, marginTop: 10, marginBottom: 10 }}
-      />
-
-      <Text style={{ marginBottom: 20 }}>
-        Current Monthly Applications Target:{" "}
-        {currentMonthlyApplicationsTarget
-          ? currentMonthlyApplicationsTarget.targetCount
-          : "Not set"}
-      </Text>
-
-      <Text>Monthly Effort Target</Text>
-
-      <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+        {/* label for weekly applications input */}
+        <Text style={{ color: textColor, marginBottom: 6 }}>
+          Weekly Applications Target
+        </Text>
         <TextInput
-          accessibilityLabel="Monthly effort hours"
-          value={monthlyHours}
-          onChangeText={setMonthlyHours}
+          accessibilityLabel="Weekly Applications Target"
+          value={weeklyApplicationsTarget}
+          onChangeText={setWeeklyApplicationsTarget}
           keyboardType="numeric"
-          placeholder="Hours"
-          style={{ flex: 1, borderWidth: 1, padding: 10 }}
+          placeholder="Enter weekly applications target"
+          placeholderTextColor={mutedTextColor}
+          style={{
+            // thin input border
+            borderWidth: 1,
+            // border colour
+            borderColor: borderColor,
+            // inner spacing
+            padding: 10,
+            // small space above input
+            marginTop: 10,
+            // space below input
+            marginBottom: 10,
+            // rounded corners
+            borderRadius: 8,
+            // white background
+            backgroundColor: "#FFFFFF",
+            // text colour
+            color: textColor,
+          }}
         />
 
-        <TextInput
-          accessibilityLabel="Monthly effort minutes"
-          value={monthlyMinutes}
-          onChangeText={setMonthlyMinutes}
-          keyboardType="numeric"
-          placeholder="Minutes"
-          style={{ flex: 1, borderWidth: 1, padding: 10 }}
-        />
+        {/* show current saved weekly applications target */}
+        <Text style={{ marginBottom: 20, color: textColor }}>
+          Current Weekly Applications Target:{" "}
+          {currentWeeklyApplicationsTarget
+            ? currentWeeklyApplicationsTarget.targetCount
+            : "Not set"}
+        </Text>
+
+        {/* label for weekly effort target */}
+        <Text style={{ color: textColor, marginBottom: 6 }}>
+          Weekly Effort Target
+        </Text>
+
+        {/* weekly effort hours and minutes inputs */}
+        <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+          <TextInput
+            accessibilityLabel="Weekly effort hours"
+            value={weeklyHours}
+            onChangeText={setWeeklyHours}
+            keyboardType="numeric"
+            placeholder="Hours"
+            placeholderTextColor={mutedTextColor}
+            style={{
+              // take half of the row
+              flex: 1,
+              // thin input border
+              borderWidth: 1,
+              // border colour
+              borderColor: borderColor,
+              // inner spacing
+              padding: 10,
+              // rounded corners
+              borderRadius: 8,
+              // white background
+              backgroundColor: "#FFFFFF",
+              // text colour
+              color: textColor,
+            }}
+          />
+
+          <TextInput
+            accessibilityLabel="Weekly effort minutes"
+            value={weeklyMinutes}
+            onChangeText={setWeeklyMinutes}
+            keyboardType="numeric"
+            placeholder="Minutes"
+            placeholderTextColor={mutedTextColor}
+            style={{
+              // take half of the row
+              flex: 1,
+              // thin input border
+              borderWidth: 1,
+              // border colour
+              borderColor: borderColor,
+              // inner spacing
+              padding: 10,
+              // rounded corners
+              borderRadius: 8,
+              // white background
+              backgroundColor: "#FFFFFF",
+              // text colour
+              color: textColor,
+            }}
+          />
+        </View>
+
+        {/* show current saved weekly effort target */}
+        <Text style={{ marginBottom: 20, color: textColor }}>
+          {currentWeeklyEffortTarget
+            ? (() => {
+                // convert saved minutes into hours and minutes for display
+                const { hours, minutes } = minutesToHoursMinutes(
+                  currentWeeklyEffortTarget.targetCount
+                );
+                return `Current Weekly Effort Target: ${hours}h ${minutes}m`;
+              })()
+            : "Not set"}
+        </Text>
       </View>
 
-      <Text style={{ marginBottom: 20 }}>
-        {currentMonthlyEffortTarget
-          ? (() => {
-              const { hours, minutes } = minutesToHoursMinutes(
-                currentMonthlyEffortTarget.targetCount
-              );
-              return `Current Monthly Effort Target: ${hours}h ${minutes}m`;
-            })()
-          : "Not set"}
-      </Text>
+      {/* monthly targets card */}
+      <View
+        style={{
+          // card background colour
+          backgroundColor: cardColor,
+          // thin card border
+          borderWidth: 1,
+          // border colour
+          borderColor: borderColor,
+          // rounded corners
+          borderRadius: 10,
+          // inner spacing
+          padding: 14,
+          // spacing below card
+          marginBottom: 20,
+        }}
+      >
+        {/* section heading */}
+        <Text style={{ fontSize: 20, marginBottom: 10, color: textColor }}>
+          Monthly Targets
+        </Text>
+
+        {/* label for monthly applications input */}
+        <Text style={{ color: textColor, marginBottom: 6 }}>
+          Monthly Applications Target
+        </Text>
+        <TextInput
+          accessibilityLabel="Monthly Applications Target"
+          value={monthlyApplicationsTarget}
+          onChangeText={setMonthlyApplicationsTarget}
+          keyboardType="numeric"
+          placeholder="Enter monthly applications target"
+          placeholderTextColor={mutedTextColor}
+          style={{
+            // thin input border
+            borderWidth: 1,
+            // border colour
+            borderColor: borderColor,
+            // inner spacing
+            padding: 10,
+            // small space above input
+            marginTop: 10,
+            // space below input
+            marginBottom: 10,
+            // rounded corners
+            borderRadius: 8,
+            // white background
+            backgroundColor: "#FFFFFF",
+            // text colour
+            color: textColor,
+          }}
+        />
+
+        {/* show current saved monthly applications target */}
+        <Text style={{ marginBottom: 20, color: textColor }}>
+          Current Monthly Applications Target:{" "}
+          {currentMonthlyApplicationsTarget
+            ? currentMonthlyApplicationsTarget.targetCount
+            : "Not set"}
+        </Text>
+
+        {/* label for monthly effort target */}
+        <Text style={{ color: textColor, marginBottom: 6 }}>
+          Monthly Effort Target
+        </Text>
+
+        {/* monthly effort hours and minutes inputs */}
+        <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+          <TextInput
+            accessibilityLabel="Monthly effort hours"
+            value={monthlyHours}
+            onChangeText={setMonthlyHours}
+            keyboardType="numeric"
+            placeholder="Hours"
+            placeholderTextColor={mutedTextColor}
+            style={{
+              // take half of the row
+              flex: 1,
+              // thin input border
+              borderWidth: 1,
+              // border colour
+              borderColor: borderColor,
+              // inner spacing
+              padding: 10,
+              // rounded corners
+              borderRadius: 8,
+              // white background
+              backgroundColor: "#FFFFFF",
+              // text colour
+              color: textColor,
+            }}
+          />
+
+          <TextInput
+            accessibilityLabel="Monthly effort minutes"
+            value={monthlyMinutes}
+            onChangeText={setMonthlyMinutes}
+            keyboardType="numeric"
+            placeholder="Minutes"
+            placeholderTextColor={mutedTextColor}
+            style={{
+              // take half of the row
+              flex: 1,
+              // thin input border
+              borderWidth: 1,
+              // border colour
+              borderColor: borderColor,
+              // inner spacing
+              padding: 10,
+              // rounded corners
+              borderRadius: 8,
+              // white background
+              backgroundColor: "#FFFFFF",
+              // text colour
+              color: textColor,
+            }}
+          />
+        </View>
+
+        {/* show current saved monthly effort target */}
+        <Text style={{ marginBottom: 20, color: textColor }}>
+          {currentMonthlyEffortTarget
+            ? (() => {
+                // convert saved minutes into hours and minutes for display
+                const { hours, minutes } = minutesToHoursMinutes(
+                  currentMonthlyEffortTarget.targetCount
+                );
+                return `Current Monthly Effort Target: ${hours}h ${minutes}m`;
+              })()
+            : "Not set"}
+        </Text>
+      </View>
 
       <Button
+        // accessibility label for save button
         accessibilityLabel="Save targets"
+        // button text
         title="Save Targets"
+        // save all target values
         onPress={handleSaveTargets}
+        // use primary brand colour
+        color={primaryColor}
       />
+      {/* spacing between buttons */}
       <View style={{ height: 10 }} />
 
       <Button
+        // accessibility label for logout button
         accessibilityLabel="Log out"
+        // button text
         title="Logout"
+        // log the user out
         onPress={handleLogout}
+        // use primary brand colour
+        color={primaryColor}
       />
+      {/* spacing between buttons */}
       <View style={{ height: 10 }} />
       <Button
+        // accessibility label for delete profile button
         accessibilityLabel="Delete profile"
+        // button text
         title="Delete Profile"
+        // delete the current profile
         onPress={handleDeleteProfile}
+        // use primary brand colour
+        color={primaryColor}
       />
     </ScrollView>
   );
