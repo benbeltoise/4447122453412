@@ -192,7 +192,7 @@ export default function AddScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* add form card */}

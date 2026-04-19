@@ -287,7 +287,7 @@ export default function InsightsScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* Screen title */}

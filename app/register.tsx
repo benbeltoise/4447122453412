@@ -136,7 +136,7 @@ export default function RegisterScreen() {
             textAlign: "center",
           }}
         >
-          job application tracker
+          Job Application Tracker
         </Text>
 
         {/* page heading */}

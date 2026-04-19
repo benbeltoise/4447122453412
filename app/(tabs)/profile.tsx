@@ -321,7 +321,7 @@ export default function ProfileScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* page heading */}

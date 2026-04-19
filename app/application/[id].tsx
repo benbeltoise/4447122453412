@@ -116,7 +116,7 @@ export default function ApplicationDetailScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* application details card */}

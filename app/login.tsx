@@ -133,7 +133,7 @@ export default function LoginScreen() {
             textAlign: "center",
           }}
         >
-          job application tracker
+          Job Application Tracker
         </Text>
 
         {/* page heading */}

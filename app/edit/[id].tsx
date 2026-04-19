@@ -83,7 +83,7 @@ export default function EditApplicationScreen() {
   // card background colour
   const cardColor = "#FFFFFF";
   // main brand colour
-  const primaryColor = "#2F6FED";
+  const primaryColor = "#2e6fed";
   // main text colour
   const textColor = "#1F2937";
   // muted text colour
@@ -206,7 +206,7 @@ export default function EditApplicationScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* edit form card */}

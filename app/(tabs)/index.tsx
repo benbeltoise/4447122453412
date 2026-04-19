@@ -259,7 +259,7 @@ export default function HomeScreen() {
           color: mutedTextColor,
         }}
       >
-        job application tracker
+        Job Application Tracker
       </Text>
 
       {/* page heading */}
