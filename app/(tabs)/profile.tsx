@@ -375,7 +375,7 @@ export default function ProfileScreen() {
       >
         {/* section heading */}
         <Text style={{ fontSize: 20, marginBottom: 10, color: textColor }}>
-          Weekly Targets
+          Weekly
         </Text>
 
         {/* label for weekly applications input */}
@@ -508,7 +508,7 @@ export default function ProfileScreen() {
       >
         {/* section heading */}
         <Text style={{ fontSize: 20, marginBottom: 10, color: textColor }}>
-          Monthly Targets
+          Monthly
         </Text>
 
         {/* label for monthly applications input */}
