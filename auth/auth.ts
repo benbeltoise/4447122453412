@@ -1,3 +1,6 @@
+// CORRECTION FROM PREVIOUS AUTH.TS COMMITMENT: bcrypt was not used, unlike what the commitment message said
+
+
 // Import db
 import { db } from "@/db/client";
 
