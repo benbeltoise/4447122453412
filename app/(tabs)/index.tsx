@@ -228,7 +228,7 @@ export default function HomeScreen() {
     return matchesSearch && matchesStatus && matchesFromDate && matchesToDate;
   });
 
-  // html and css to render
+  // render
   return (
     // main scrollable page container
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>

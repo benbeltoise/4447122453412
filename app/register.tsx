@@ -86,7 +86,7 @@ export default function RegisterScreen() {
     router.replace("/(tabs)" as any);
   }
 
-  // html and css to render
+  // render
   return (
     // main page container
     <View style={{ flex: 1, padding: 20, justifyContent: "center", backgroundColor }}>

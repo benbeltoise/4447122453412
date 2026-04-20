@@ -175,7 +175,7 @@ export default function EditApplicationScreen() {
     router.replace(`/application/${application.id}` as any);
   }
 
-  // html and css to render
+  // render
   return (
     // main scrollable page container
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>

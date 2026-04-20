@@ -256,7 +256,7 @@ export default function InsightsScreen() {
     return (count / maxStatusCount) * 100;
   }
 
-  // html & css to render
+  //  render
   return (
     // main scrollable page container
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>

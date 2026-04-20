@@ -232,7 +232,7 @@ export default function CategoriesScreen() {
 
   // END OF CLAUDE.AI SECTION 2
 
-  // html & css to return
+  // render
   return (
     // main scrollable page container
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>

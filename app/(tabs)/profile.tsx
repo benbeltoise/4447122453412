@@ -290,7 +290,7 @@ export default function ProfileScreen() {
     router.replace("/login" as any);
   }
 
-  // html/css to render
+  // render
   return (
     // main scrollable page container
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor }}>
