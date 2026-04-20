@@ -637,6 +637,7 @@ export default function ProfileScreen() {
 
       <Button
         // accessibility label for logout button
+
         accessibilityLabel="Log out"
         // button text
         title="Logout"
